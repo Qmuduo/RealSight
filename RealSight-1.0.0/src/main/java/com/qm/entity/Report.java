@@ -26,6 +26,11 @@ public class Report {
     private Long commentId;
     
     private String reason;
+
+    /**
+     * 跟踪举报处理的时间
+     */
+    private LocalDateTime handledAt;
     
     /**
      * 状态：0:待处理, 1:已处理, -1:已拒绝

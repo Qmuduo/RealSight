@@ -11,7 +11,7 @@
  Target Server Version : 80030
  File Encoding         : 65001
 
- Date: 04/05/2025 18:41:27
+ Date: 05/05/2025 13:40:59
 */
 
 SET NAMES utf8mb4;
@@ -443,6 +443,7 @@ CREATE TABLE `reports`  (
   `status` tinyint(0) NULL DEFAULT 0 COMMENT '0:待处理, 1:已处理, -1:已拒绝',
   `created_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0),
   `updated_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `handled_at` timestamp(0) NULL DEFAULT NULL COMMENT '处理时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `reporter_id`(`reporter_id`) USING BTREE,
   INDEX `news_id`(`news_id`) USING BTREE,
@@ -610,7 +611,11 @@ CREATE TABLE `users`  (
   `bio` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
   `created_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0),
   `updated_at` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0),
-  `status` tinyint(0) NULL DEFAULT 1 COMMENT '1:活跃, 0:禁用',
+  `is_active` tinyint(1) NULL DEFAULT 1 COMMENT '是否活跃（1:是，0:否）',
+  `is_verified` tinyint(1) NULL DEFAULT 0 COMMENT '是否已验证（1:是，0:否）',
+  `nickname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '用户昵称',
+  `last_login_time` timestamp(0) NULL DEFAULT NULL COMMENT '最后登录时间',
+  `last_login_ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '最后登录IP地址',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_username`(`username`) USING BTREE,
   UNIQUE INDEX `uk_email`(`email`) USING BTREE,
