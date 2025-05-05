@@ -1,0 +1,124 @@
+-- 国家/地区表
+CREATE TABLE `countries` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `code` VARCHAR(10) NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `flag_emoji` VARCHAR(10) DEFAULT NULL,
+  `flag_image` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 媒体源表
+CREATE TABLE `media_sources` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NOT NULL,
+  `country_id` BIGINT NOT NULL,
+  `logo_url` VARCHAR(255) DEFAULT NULL,
+  `website_url` VARCHAR(255) DEFAULT NULL,
+  `credibility_score` TINYINT DEFAULT 3 COMMENT '1-5星评分',
+  `languages` VARCHAR(50) DEFAULT 'en',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` TINYINT DEFAULT 1 COMMENT '1:活跃, 0:禁用',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 新闻分类表
+CREATE TABLE `news_categories` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL,
+  `description` VARCHAR(255) DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 热点事件表
+CREATE TABLE `hot_events` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) NOT NULL,
+  `description` TEXT DEFAULT NULL,
+  `start_date` DATE DEFAULT NULL,
+  `end_date` DATE DEFAULT NULL,
+  `is_active` BOOLEAN DEFAULT TRUE,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 新闻表
+CREATE TABLE `news` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) NOT NULL,
+  `content` TEXT NOT NULL,
+  `summary` TEXT DEFAULT NULL,
+  `media_id` BIGINT NOT NULL,
+  `category_id` BIGINT DEFAULT NULL,
+  `hot_event_id` BIGINT DEFAULT NULL,
+  `author` VARCHAR(100) DEFAULT NULL,
+  `published_at` DATETIME NOT NULL,
+  `source_url` VARCHAR(255) DEFAULT NULL,
+  `image_url` VARCHAR(255) DEFAULT NULL,
+  `view_count` INT DEFAULT 0,
+  `like_count` INT DEFAULT 0,
+  `comment_count` INT DEFAULT 0,
+  `share_count` INT DEFAULT 0,
+  `is_breaking` BOOLEAN DEFAULT FALSE,
+  `language` VARCHAR(10) DEFAULT 'en',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` TINYINT DEFAULT 1 COMMENT '1:已发布, 0:草稿, -1:已删除',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`media_id`) REFERENCES `media_sources` (`id`),
+  FOREIGN KEY (`category_id`) REFERENCES `news_categories` (`id`),
+  FOREIGN KEY (`hot_event_id`) REFERENCES `hot_events` (`id`),
+  FULLTEXT KEY `ft_news_content` (`title`, `content`, `summary`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 新闻多媒体内容表
+CREATE TABLE `news_media` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `news_id` BIGINT NOT NULL,
+  `type` VARCHAR(20) NOT NULL COMMENT 'image, video, audio',
+  `url` VARCHAR(255) NOT NULL,
+  `caption` VARCHAR(255) DEFAULT NULL,
+  `order_index` INT DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`news_id`) REFERENCES `news` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 新闻标签表
+CREATE TABLE `tags` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 新闻标签关联表
+CREATE TABLE `news_tags` (
+  `news_id` BIGINT NOT NULL,
+  `tag_id` BIGINT NOT NULL,
+  PRIMARY KEY (`news_id`, `tag_id`),
+  FOREIGN KEY (`news_id`) REFERENCES `news` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 新闻翻译表
+CREATE TABLE `news_translations` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `news_id` BIGINT NOT NULL,
+  `language` VARCHAR(10) NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `content` TEXT NOT NULL,
+  `summary` TEXT DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_news_language` (`news_id`, `language`),
+  FOREIGN KEY (`news_id`) REFERENCES `news` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

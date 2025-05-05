@@ -1,0 +1,46 @@
+-- 用户行为记录表
+CREATE TABLE `user_behaviors` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT NOT NULL,
+  `news_id` BIGINT DEFAULT NULL,
+  `post_id` BIGINT DEFAULT NULL,
+  `behavior_type` VARCHAR(20) NOT NULL COMMENT 'view, like, share, skip, comment',
+  `weight` INT DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`news_id`) REFERENCES `news` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 用户兴趣标签表
+CREATE TABLE `user_interests` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT NOT NULL,
+  `tag_id` BIGINT NOT NULL,
+  `weight` INT DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_user_tag` (`user_id`, `tag_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 举报表
+CREATE TABLE `reports` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `reporter_id` BIGINT NOT NULL,
+  `news_id` BIGINT DEFAULT NULL,
+  `post_id` BIGINT DEFAULT NULL,
+  `comment_id` BIGINT DEFAULT NULL,
+  `reason` VARCHAR(255) NOT NULL,
+  `status` TINYINT DEFAULT 0 COMMENT '0:待处理, 1:已处理, -1:已拒绝',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`reporter_id`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`news_id`) REFERENCES `news` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
