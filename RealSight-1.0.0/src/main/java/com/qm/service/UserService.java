@@ -61,4 +61,18 @@ public interface UserService extends IService<User> {
      * @return 是否验证成功
      */
     boolean verifyUser(Long userId);
+
+    /**
+     * 用户登录
+     * @param user
+     * @return
+     */
+    String login(User user);
+    
+    /**
+     * 用户注册
+     * @param user 用户信息
+     * @return 是否注册成功
+     */
+    boolean register(User user);
 }

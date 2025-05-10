@@ -16,6 +16,7 @@ public class Result {
     private Boolean success; // 返回的成功或者失败的标识符
     private Integer code; // 返回的状态码
     private String message; // 提示信息
+    // 返回对象
     private Map<String, Object> data = new HashMap<String, Object>(); // 数据
 
 

@@ -1,13 +1,15 @@
 package com.qm.config;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.qm.domain.User;
-import com.qm.domain.vo.LoginUser;
-import com.qm.mapper.MenuMapper;
+
+import com.qm.entity.Role;
+import com.qm.entity.User;
+import com.qm.entity.vo.LoginUser;
 import com.qm.mapper.UserMapper;
+import com.qm.service.UserRoleService;
+import com.qm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @program: springsecurity-hello
+ * @program:
  * @description:
  * @author: ZhangQingMin
  * @create: 2025-05-06 19:38
@@ -30,7 +32,13 @@ public class UserDetailServiceImpl implements UserDetailsService {
     private UserMapper userMapper;
 
     @Autowired
-    private MenuMapper menuMapper;
+    private UserService userService;
+
+    @Autowired
+    private UserRoleService userRoleService;
+
+    //@Autowired
+    //private MenuMapper menuMapper;
 
     /**
      * UserServiceImpl的authenticationManager.authenticate()方法会调用这个方法，来加载用户信息包括权限
@@ -45,9 +53,15 @@ public class UserDetailServiceImpl implements UserDetailsService {
         }
 
         // 1.连接数据库，用用户名查询user
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_name", username);
-        User user = userMapper.selectOne(queryWrapper);
+
+        /**
+         * old:用userMapper来查
+         */
+//        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("user_name", username);
+//        User user = userMapper.selectOne(queryWrapper);
+
+        User user = userService.getUserByUsername(username);
 
         if (Objects.isNull(user)) {
             // 传入空字符串，后面的LoginFailureHandler会去匹配
@@ -63,7 +77,13 @@ public class UserDetailServiceImpl implements UserDetailsService {
 //        stringAuthorities.add("update");
 
         // 去数据库查的用户权限
-        List<String> stringAuthorities = menuMapper.getMenuByUserId(user.getId());
+        //List<String> stringAuthorities = menuMapper.getMenuByUserId(user.getId());
+        List<String> stringAuthorities = new ArrayList<>();
+
+        List<Role> roles = userRoleService.getRolesByUserId(user.getId());
+        for (Role role : roles) {
+            stringAuthorities.add(role.getName());
+        }
 
         // 3.返回UserDetail对象
 

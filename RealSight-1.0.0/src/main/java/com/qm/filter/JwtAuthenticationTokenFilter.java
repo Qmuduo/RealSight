@@ -1,7 +1,7 @@
 package com.qm.filter;
 
 import com.alibaba.fastjson2.JSON;
-import com.qm.domain.vo.LoginUser;
+import com.qm.entity.vo.LoginUser;
 import com.qm.exception.CustomerAuthenticationException;
 import com.qm.handler.LoginFailureHandler;
 import com.qm.utils.JwtUtil;
@@ -14,15 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * @program: springsecurity-hello
@@ -84,7 +81,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         try {
             String requestURI = request.getRequestURI();// uri就是url的一部分，url:localhost:8080/hello uri:/hello
             // 1.不是登录接口，就要进行token校验，看看是不是系统发放的正确token
-            if (!requestURI.equals("/user/login")) {
+            if (!requestURI.equals("/auth/login") && !requestURI.equals("/auth/register")) {
                 this.validateToken(request);
             }
         } catch (AuthenticationException e) {

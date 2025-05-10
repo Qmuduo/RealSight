@@ -77,7 +77,9 @@ public class SecurityConfig {
                 configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authorizeHttpRequests(authorizeRequests ->
-                authorizeRequests.requestMatchers("/user/login").permitAll()
+                authorizeRequests
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/auth/register").permitAll()
                         .anyRequest().authenticated());
         // 自定义Jwt校验过滤器放在最前面
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);

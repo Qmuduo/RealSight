@@ -1,7 +1,7 @@
-package com.qm.domain.vo;
+package com.qm.entity.vo;
 
 import com.alibaba.fastjson2.annotation.JSONField;
-import com.qm.domain.User;
+import com.qm.entity.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @program: springsecurity-hello
+ * @program:
  * @description: security要用，UserDetailService里需要用，把自己的User和Security的User做关联
  * @author: ZhangQingMin
  * @create: 2025-05-06 19:34
@@ -86,7 +86,7 @@ public class LoginUser implements UserDetails {
     // 获取用户名
     @Override
     public String getUsername() {
-        return this.user.getUserName();
+        return this.user.getUsername();
     }
 
     // 账号是否未过期

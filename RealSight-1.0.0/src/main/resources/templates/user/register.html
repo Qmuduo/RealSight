@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - RealSight</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .register-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            color: #3f51b5;
+            font-weight: 700;
+        }
+        .form-control {
+            padding: 12px;
+            border-radius: 5px;
+        }
+        .btn-primary {
+            background-color: #3f51b5;
+            border-color: #3f51b5;
+            padding: 12px;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #303f9f;
+            border-color: #303f9f;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="register-container">
+            <div class="logo">
+                <h1>RealSight</h1>
+                <p>加入我们，探索全球新闻</p>
+            </div>
+            
+            <div id="alertMessage" class="alert alert-danger d-none" role="alert"></div>
+            
+            <form id="registerForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">用户名</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                    <div class="form-text">用户名长度必须在4-20个字符之间</div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">邮箱</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">手机号</label>
+                    <input type="text" class="form-control" id="phone" name="phone">
+                    <div class="form-text">手机号为选填项</div>
+                </div>
+                <div class="mb-3">
+                    <label for="nickname" class="form-label">昵称</label>
+                    <input type="text" class="form-control" id="nickname" name="nickname">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">密码</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="form-text">密码长度必须在6-20个字符之间</div>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">确认密码</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">注册</button>
+            </form>
+            
+            <div class="login-link">
+                <p>已有账号？<a th:href="@{/user/login}">立即登录</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#registerForm').submit(function(e) {
+                e.preventDefault();
+                
+                // 验证密码是否一致
+                if ($('#password').val() !== $('#confirmPassword').val()) {
+                    $('#alertMessage').text('两次输入的密码不一致').removeClass('d-none');
+                    return;
+                }
+                
+                var formData = {
+                    username: $('#username').val(),
+                    email: $('#email').val(),
+                    phone: $('#phone').val(),
+                    nickname: $('#nickname').val(),
+                    password: $('#password').val(),
+                    confirmPassword: $('#confirmPassword').val()
+                };
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/user/register',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        if (response.code === 200) {
+                            alert('注册成功，请登录');
+                            window.location.href = '/user/login';
+                        } else {
+                            $('#alertMessage').text(response.message).removeClass('d-none');
+                        }
+                    },
+                    error: function(xhr) {
+                        $('#alertMessage').text('注册失败，请稍后再试').removeClass('d-none');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

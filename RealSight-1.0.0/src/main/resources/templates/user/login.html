@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - RealSight</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-container {
+            max-width: 450px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            color: #3f51b5;
+            font-weight: 700;
+        }
+        .form-control {
+            padding: 12px;
+            border-radius: 5px;
+        }
+        .btn-primary {
+            background-color: #3f51b5;
+            border-color: #3f51b5;
+            padding: 12px;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #303f9f;
+            border-color: #303f9f;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <div class="logo">
+                <h1>RealSight</h1>
+                <p>全球新闻，一览无余</p>
+            </div>
+            
+            <div id="alertMessage" class="alert alert-danger d-none" role="alert"></div>
+            
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="account" class="form-label">用户名/邮箱/手机号</label>
+                    <input type="text" class="form-control" id="account" name="account" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">密码</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+                    <label class="form-check-label" for="rememberMe">记住我</label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">登录</button>
+            </form>
+            
+            <div class="register-link">
+                <p>还没有账号？<a th:href="@{/user/register}">立即注册</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#loginForm').submit(function(e) {
+                e.preventDefault();
+                
+                var formData = {
+                    account: $('#account').val(),
+                    password: $('#password').val(),
+                    rememberMe: $('#rememberMe').is(':checked')
+                };
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/user/login',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        if (response.code === 200) {
+                            window.location.href = '/user/index';
+                        } else {
+                            $('#alertMessage').text(response.message).removeClass('d-none');
+                        }
+                    },
+                    error: function(xhr) {
+                        $('#alertMessage').text('登录失败，请稍后再试').removeClass('d-none');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
